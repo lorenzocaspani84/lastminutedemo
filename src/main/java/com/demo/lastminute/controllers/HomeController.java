@@ -5,6 +5,7 @@ import com.demo.lastminute.domain.GoodsOutput;
 import com.demo.lastminute.domain.ReturnObject;
 import com.demo.lastminute.repository.CategoryRepository;
 import com.demo.lastminute.service.GoodsService;
+import com.demo.lastminute.service.ReceiptService;
 import com.demo.lastminute.utils.PdfGeneratorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,44 +33,27 @@ public class HomeController {
     private static final Logger LOG = LoggerFactory.getLogger(HomeController.class);
 
     @Autowired
-    GoodsService goodsService;
-
-    @Autowired
-    PdfGeneratorUtil pdfGenaratorUtil;
-
-    @Value("${pdf.template.filename}")
-    private String pdfTemplateFilename;
-
-    @Value("${pdf.result.filename}")
-    private String resultPdfFilename;
-
+    ReceiptService receiptService;
+    
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public String showHome() throws Exception {
+    public String home() throws Exception {
 
-        LOG.info("START showHome");
+        LOG.info("START home");
 
-        List<ReturnObject> output = goodsService.getOutput();
+        receiptService.generatePdf();
 
-        Map<String,List<ReturnObject> > data = new HashMap<String, List<ReturnObject> >();
-        data.put("data",output);
-        pdfGenaratorUtil.createPdf(pdfTemplateFilename, data);
-
-        LOG.info("FINISH showHome");
-        return "download";
+        LOG.info("FINISH home");
+        return "home";
     }
 
     @RequestMapping(value = "/download")
     public @ResponseBody
     ResponseEntity<byte[]> download() throws Exception {
+        LOG.info("START download");
 
-        Path pdfPreview = Paths.get( System.getProperty("java.io.tmpdir") + "/" + pdfTemplateFilename + ".pdf" );
-        byte[] data = Files.readAllBytes(pdfPreview);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("application/pdf"));
-        String filename = resultPdfFilename + ".pdf";
-        headers.setContentDispositionFormData(filename, filename);
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-        ResponseEntity<byte[]> responseByte = new ResponseEntity<byte[]>(data, headers, HttpStatus.OK);
+        ResponseEntity<byte[]> responseByte = receiptService.downloadPdf();
+
+        LOG.info("FINISH download");
         return responseByte;
     }
 

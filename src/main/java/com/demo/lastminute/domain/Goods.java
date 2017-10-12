@@ -28,7 +28,7 @@ public class Goods {
     @Column(name = "duty")
     private boolean duty;
 
-    @ManyToOne(targetEntity = Category.class, cascade = { CascadeType.REFRESH })
+    @ManyToOne(targetEntity = Category.class, fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH })
     @JoinColumn(name = "category_id")
     private Category category;
 

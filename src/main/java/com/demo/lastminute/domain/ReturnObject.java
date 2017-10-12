@@ -5,8 +5,6 @@ import java.util.List;
 
 public class ReturnObject {
 
-    private String categoryName;
-
     private BigDecimal totalTax;
 
     private BigDecimal totalPrice;
@@ -37,11 +35,4 @@ public class ReturnObject {
         this.goodsOutput = goodsOutput;
     }
 
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
 }

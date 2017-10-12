@@ -1,28 +1,63 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <style type="text/css">
+        .myButton {
+            background-color:#44c767;
+            -moz-border-radius:28px;
+            -webkit-border-radius:28px;
+            border-radius:28px;
+            border:1px solid #18ab29;
+            display:inline-block;
+            cursor:pointer;
+            color:#ffffff;
+            font-family:Arial;
+            font-size:17px;
+            padding:16px 31px;
+            text-decoration:none;
+            text-shadow:0px 1px 0px #2f6627;
+        }
+        .myButton:hover {
+            background-color:#5cbf2a;
+        }
+        .myButton:active {
+            position:relative;
+            top:1px;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="row">
-        <div class="cols-4-md">
-            Input 1:<br />
-            1 book at 12.49<br />
-            1 music CD at 14.99<br />
-            1 chocolate bar at 0.85<br />
-        </div>
-        <div class="cols-4-md">
-            Input 2:<br />
-            1 imported box of chocolates at 10.00<br />
-            1 imported bottle of perfume at 47.50<br />
-        </div>
-        <div class="cols-4-md">
-            Input 3:<br />
-            1 imported bottle of perfume at 27.99<br />
-            1 bottle of perfume at 18.99<br />
-            1 packet of headache pills at 9.75<br />
-            1 box of imported chocolates at 11.25<br />
-        </div>
-    </div>
+    <table width="80%" align="center">
+        <tr>
+            <td width="33%">
+                <h3>Input 1:</h3><br />
+                1 book at 12.49<br />
+                1 music CD at 14.99<br />
+                1 chocolate bar at 0.85<br />
+            </td>
+            <td width="33%">
+                <h3>Input 2:</h3><br />
+                1 imported box of chocolates at 10.00<br />
+                1 imported bottle of perfume at 47.50<br /><br />
+            </td>
+            <td width="33%">
+                <h3>Input 3:</h3><br />
+                1 imported bottle of perfume at 27.99<br />
+                1 bottle of perfume at 18.99<br />
+                1 packet of headache pills at 9.75<br />
+                1 box of imported chocolates at 11.25
+            </td>
+        </tr>
+    </table>
+
+    <table style="margin-top: 25px;" width="80%" align="center">
+        <tr>
+            <td width="100%" align="center">
+                <a th:href="@{/download}" class="myButton">Download PDF</a>
+            </td>
+        </tr>
+    </table>
+
 </body>
 </html>

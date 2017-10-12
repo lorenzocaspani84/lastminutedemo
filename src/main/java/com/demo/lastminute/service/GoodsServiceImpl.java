@@ -22,58 +22,28 @@ public class GoodsServiceImpl implements GoodsService {
     @Autowired
     CategoryRepository categoryRepository;
 
-    @Value("${tax.goods}")
+    @Autowired
+    PrecisionService precisionService;
+
+    @Value("${tax.goods:10}")
     private Integer goodsTax;
 
-    @Value("${tax.import}")
+    @Value("${tax.import:5}")
     private Integer importTax;
 
 
     @Override
-    public List<ReturnObject> getOutput(){
-
-        Map<String, List<Goods>> goodsMap = populate();
-
-        List<ReturnObject> returnObjects = new ArrayList<ReturnObject>();
-        for (Map.Entry<String, List<Goods>> entry : goodsMap.entrySet())
-        {
-            List<Goods> goods = goodsMap.get(entry.getKey());
-
-            List<GoodsOutput> goodsOutputs = new ArrayList<GoodsOutput>();
-            BigDecimal totalTaxes = BigDecimal.ZERO;
-            BigDecimal totalPrice = BigDecimal.ZERO;
-            for (Goods good : goods) {
-                int taxes = getTaxes(good);
-
-                BigDecimal goodTaxValue = totalTaxOnSingleGood(good.getPrice(), taxes);
-                BigDecimal roundedTax = roundValue(goodTaxValue);
-
-                BigDecimal singleGoodOutputPrice = good.getPrice().add(roundedTax);
-                GoodsOutput go = goodsOutputPopulate(good, goodTaxValue, roundedTax);
-                goodsOutputs.add(go);
-
-                totalTaxes = totalTaxes.add(roundedTax);
-                totalPrice = totalPrice.add(singleGoodOutputPrice);
-            }
-
-            ReturnObject returnObject = getReturnObject(entry, goodsOutputs, totalTaxes, totalPrice);
-
-            returnObjects.add(returnObject);
-        }
-
-        return returnObjects;
-    }
-
-    private ReturnObject getReturnObject(Map.Entry<String, List<Goods>> entry, List<GoodsOutput> goodsOutputs, BigDecimal totalTaxes, BigDecimal totalPrice) {
+    public ReturnObject populateReturnObject(Map.Entry<Long, List<Goods>> entry, List<GoodsOutput> goodsOutputs, BigDecimal totalTaxes, BigDecimal totalPrice) {
         ReturnObject returnObject = new ReturnObject();
         returnObject.setGoodsOutput(goodsOutputs);
         returnObject.setTotalPrice(totalPrice);
         returnObject.setTotalTax(totalTaxes);
-        returnObject.setCategoryName(entry.getKey());
+
         return returnObject;
     }
 
-    private GoodsOutput goodsOutputPopulate(Goods good, BigDecimal goodTaxValue, BigDecimal roundedTax){
+    @Override
+    public GoodsOutput populateGoodsOutput(Goods good, BigDecimal goodTaxValue, BigDecimal roundedTax){
         GoodsOutput go = new GoodsOutput();
         go.setName(good.getName());
         go.setQuantity(good.getQuantity());
@@ -84,40 +54,35 @@ public class GoodsServiceImpl implements GoodsService {
         return go;
     }
 
-    private Map<String, List<Goods>> populate(){
+    @Override
+    public Map<Long, List<Goods>> populateWithInputs(){
 
-        Map<String, List<Goods>> ret = new HashMap<String, List<Goods>>();
+        Map<Long, List<Goods>> inputs = new HashMap<Long, List<Goods>>();
 
         List<Category> categories = categoryRepository.findAllByOrderByIdAsc();
 
         for (Category category : categories) {
-            ret.put(category.getName(), category.getGoods());
+            inputs.put(category.getId(), category.getGoods());
         }
 
-        return ret;
+        return inputs;
     }
 
 
-    public BigDecimal roundValue(BigDecimal value) {
-        BigDecimal result = BigDecimal.valueOf((Math.ceil(value.doubleValue() * 20) / 20));
-        result.setScale(2, RoundingMode.HALF_UP);
-
-        return result;
-    }
-
-
-    private BigDecimal totalTaxOnSingleGood(BigDecimal price, int taxes){
+    @Override
+    public BigDecimal totalTaxOnSingleGood(BigDecimal price, int taxes){
         BigDecimal tax = BigDecimal.ZERO;
         if(taxes > 0){
             Double doubleValue = (price.doubleValue() * (0.01 * taxes));
             tax = BigDecimal.valueOf(doubleValue);
-            tax = roundValue(tax);
+            tax = precisionService.roundValue(tax);
         }
 
         return tax;
     }
 
-    private int getTaxes(Goods good){
+    @Override
+    public int getTaxes(Goods good){
         int taxPercentual = 0;
         if(!good.isExempt()){
             taxPercentual += goodsTax;
