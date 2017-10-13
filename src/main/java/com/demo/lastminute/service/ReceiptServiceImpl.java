@@ -1,8 +1,11 @@
 package com.demo.lastminute.service;
 
+import com.demo.lastminute.domain.Category;
 import com.demo.lastminute.domain.Goods;
-import com.demo.lastminute.domain.GoodsOutput;
-import com.demo.lastminute.domain.ReturnObject;
+import com.demo.lastminute.dto.GoodsOutput;
+import com.demo.lastminute.dto.ReturnObject;
+import com.demo.lastminute.exception.CustomException;
+import com.demo.lastminute.repository.CategoryRepository;
 import com.demo.lastminute.utils.PdfGeneratorUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,6 +37,9 @@ public class ReceiptServiceImpl implements ReceiptService{
     @Autowired
     PdfGeneratorUtil pdfGenaratorUtil;
 
+    @Autowired
+    CategoryRepository categoryRepository;
+
     @Value("${pdf.template.filename}")
     private String pdfTemplateFilename;
 
@@ -40,19 +47,17 @@ public class ReceiptServiceImpl implements ReceiptService{
     private String resultPdfFilename;
 
 
-    private List<ReturnObject> createOutput(){
-
-        Map<Long, List<Goods>> goodsMap = goodsService.populateWithInputs();
+    @Override
+    public List<ReturnObject> createOutput(){
 
         List<ReturnObject> returnObjects = new ArrayList<ReturnObject>();
-        for (Map.Entry<Long, List<Goods>> entry : goodsMap.entrySet())
-        {
-            List<Goods> goods = goodsMap.get(entry.getKey());
+        List<Category> categories = categoryRepository.findAllByOrderByIdAsc();
+        for(Category category : categories){
 
             List<GoodsOutput> goodsOutputs = new ArrayList<GoodsOutput>();
             BigDecimal totalTaxes = BigDecimal.ZERO;
             BigDecimal totalPrice = BigDecimal.ZERO;
-            for (Goods good : goods) {
+            for (Goods good : category.getGoods()) {
                 int taxes = goodsService.getTaxes(good);
 
                 BigDecimal goodTaxValue = goodsService.totalTaxOnSingleGood(good.getPrice(), taxes);
@@ -66,7 +71,7 @@ public class ReceiptServiceImpl implements ReceiptService{
                 totalPrice = totalPrice.add(singleGoodOutputPrice);
             }
 
-            ReturnObject returnObject = goodsService.populateReturnObject(entry, goodsOutputs, totalTaxes, totalPrice);
+            ReturnObject returnObject = goodsService.populateReturnObject(goodsOutputs, totalTaxes, totalPrice);
 
             returnObjects.add(returnObject);
         }
@@ -76,17 +81,21 @@ public class ReceiptServiceImpl implements ReceiptService{
 
 
     @Override
-    public ResponseEntity<byte[]> downloadPdf() throws Exception{
+    public ResponseEntity<byte[]> downloadPdf() throws CustomException {
         Path pdfPreview = Paths.get( System.getProperty("java.io.tmpdir") + "/" + pdfTemplateFilename + ".pdf" );
-        byte[] data = Files.readAllBytes(pdfPreview);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("application/pdf"));
-        String filename = resultPdfFilename + ".pdf";
-        headers.setContentDispositionFormData(filename, filename);
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-        ResponseEntity<byte[]> responseByte = new ResponseEntity<byte[]>(data, headers, HttpStatus.OK);
+        try{
+            byte[] data = Files.readAllBytes(pdfPreview);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType("application/pdf"));
+            String filename = resultPdfFilename + ".pdf";
+            headers.setContentDispositionFormData(filename, filename);
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            ResponseEntity<byte[]> responseByte = new ResponseEntity<byte[]>(data, headers, HttpStatus.OK);
 
-        return responseByte;
+            return responseByte;
+        }catch (IOException ex){
+            throw new CustomException("Error during pdf download", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override

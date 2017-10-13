@@ -1,17 +1,16 @@
 package com.demo.lastminute.service;
 
+import com.demo.lastminute.aspect.LogMethodInputParameters;
 import com.demo.lastminute.domain.Category;
 import com.demo.lastminute.domain.Goods;
-import com.demo.lastminute.domain.GoodsOutput;
-import com.demo.lastminute.domain.ReturnObject;
+import com.demo.lastminute.dto.GoodsOutput;
+import com.demo.lastminute.dto.ReturnObject;
 import com.demo.lastminute.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,11 +32,11 @@ public class GoodsServiceImpl implements GoodsService {
 
 
     @Override
-    public ReturnObject populateReturnObject(Map.Entry<Long, List<Goods>> entry, List<GoodsOutput> goodsOutputs, BigDecimal totalTaxes, BigDecimal totalPrice) {
+    public ReturnObject populateReturnObject(List<GoodsOutput> goodsOutputs, BigDecimal totalTaxes, BigDecimal totalPrice) {
         ReturnObject returnObject = new ReturnObject();
         returnObject.setGoodsOutput(goodsOutputs);
-        returnObject.setTotalPrice(totalPrice);
-        returnObject.setTotalTax(totalTaxes);
+        returnObject.setTotalPrice(totalPrice.setScale(2, BigDecimal.ROUND_HALF_UP));
+        returnObject.setTotalTax(totalTaxes.setScale(2, BigDecimal.ROUND_HALF_UP));
 
         return returnObject;
     }
@@ -52,20 +51,6 @@ public class GoodsServiceImpl implements GoodsService {
         go.setPrice(good.getPrice().add(go.getRoundedTax()));
         
         return go;
-    }
-
-    @Override
-    public Map<Long, List<Goods>> populateWithInputs(){
-
-        Map<Long, List<Goods>> inputs = new HashMap<Long, List<Goods>>();
-
-        List<Category> categories = categoryRepository.findAllByOrderByIdAsc();
-
-        for (Category category : categories) {
-            inputs.put(category.getId(), category.getGoods());
-        }
-
-        return inputs;
     }
 
 

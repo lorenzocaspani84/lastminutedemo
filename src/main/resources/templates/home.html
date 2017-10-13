@@ -30,23 +30,15 @@
 
     <table width="80%" align="center">
         <tr>
-            <td width="33%">
-                <h3>Input 1:</h3><br />
-                1 book at 12.49<br />
-                1 music CD at 14.99<br />
-                1 chocolate bar at 0.85<br />
-            </td>
-            <td width="33%">
-                <h3>Input 2:</h3><br />
-                1 imported box of chocolates at 10.00<br />
-                1 imported bottle of perfume at 47.50<br /><br />
-            </td>
-            <td width="33%">
-                <h3>Input 3:</h3><br />
-                1 imported bottle of perfume at 27.99<br />
-                1 bottle of perfume at 18.99<br />
-                1 packet of headache pills at 9.75<br />
-                1 box of imported chocolates at 11.25
+            <td width="33%" th:each="record,iter : ${records}">
+                <h3 th:text="'Input ' + ${iter.index + 1}"></h3><br />
+
+                <p th:each="goods : ${record.goods}" th:remove="tag">
+                    <span th:text="${goods.quantity}"></span>
+                    <span th:text="${goods.name}"></span> at
+                    <span th:text="${goods.price}"></span>
+                    <br />
+                </p>
             </td>
         </tr>
     </table>

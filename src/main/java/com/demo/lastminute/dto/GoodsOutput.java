@@ -1,4 +1,4 @@
-package com.demo.lastminute.domain;
+package com.demo.lastminute.dto;
 
 import java.math.BigDecimal;
 
