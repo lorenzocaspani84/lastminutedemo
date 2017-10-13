@@ -1,7 +1,5 @@
 package com.demo.lastminute.service;
 
-import com.demo.lastminute.aspect.LogMethodInputParameters;
-import com.demo.lastminute.domain.Category;
 import com.demo.lastminute.domain.Goods;
 import com.demo.lastminute.dto.GoodsOutput;
 import com.demo.lastminute.dto.ReturnObject;
@@ -11,9 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class GoodsServiceImpl implements GoodsService {
@@ -58,7 +54,8 @@ public class GoodsServiceImpl implements GoodsService {
     public BigDecimal totalTaxOnSingleGood(BigDecimal price, int taxes){
         BigDecimal tax = BigDecimal.ZERO;
         if(taxes > 0){
-            Double doubleValue = (price.doubleValue() * (0.01 * taxes));
+            //Double doubleValue = (price.doubleValue() * (0.01 * taxes));
+            Double doubleValue = (price.doubleValue() *taxes) / 100;
             tax = BigDecimal.valueOf(doubleValue);
             tax = precisionService.roundValue(tax);
         }
