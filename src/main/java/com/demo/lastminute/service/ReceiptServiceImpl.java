@@ -1,11 +1,11 @@
 package com.demo.lastminute.service;
 
-import com.demo.lastminute.domain.Category;
+import com.demo.lastminute.domain.Basket;
 import com.demo.lastminute.domain.Goods;
 import com.demo.lastminute.dto.GoodsOutput;
 import com.demo.lastminute.dto.ReturnObject;
 import com.demo.lastminute.exception.CustomException;
-import com.demo.lastminute.repository.CategoryRepository;
+import com.demo.lastminute.repository.BasketRepository;
 import com.demo.lastminute.utils.PdfGeneratorUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +38,7 @@ public class ReceiptServiceImpl implements ReceiptService{
     PdfGeneratorUtil pdfGenaratorUtil;
 
     @Autowired
-    CategoryRepository categoryRepository;
+    BasketRepository basketRepository;
 
     @Value("${pdf.template.filename}")
     private String pdfTemplateFilename;
@@ -51,13 +51,13 @@ public class ReceiptServiceImpl implements ReceiptService{
     public List<ReturnObject> createOutput(){
 
         List<ReturnObject> returnObjects = new ArrayList<ReturnObject>();
-        List<Category> categories = categoryRepository.findAllByOrderByIdAsc();
-        for(Category category : categories){
+        List<Basket> categories = basketRepository.findAllByOrderByIdAsc();
+        for(Basket basket : categories){
 
             List<GoodsOutput> goodsOutputs = new ArrayList<GoodsOutput>();
             BigDecimal totalTaxes = BigDecimal.ZERO;
             BigDecimal totalPrice = BigDecimal.ZERO;
-            for (Goods good : category.getGoods()) {
+            for (Goods good : basket.getGoods()) {
                 int taxes = goodsService.getTaxes(good);
 
                 BigDecimal goodTaxValue = goodsService.totalTaxOnSingleGood(good.getPrice(), taxes);

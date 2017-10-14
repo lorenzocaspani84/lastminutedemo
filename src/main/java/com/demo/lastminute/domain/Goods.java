@@ -28,9 +28,9 @@ public class Goods {
     @Column(name = "duty")
     private boolean duty;
 
-    @ManyToOne(targetEntity = Category.class, fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH })
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @ManyToOne(targetEntity = Basket.class, fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH })
+    @JoinColumn(name = "basket_id")
+    private Basket basket;
 
     public Long getId() {
         return id;
@@ -80,12 +80,12 @@ public class Goods {
         this.duty = duty;
     }
 
-    public Category getCategory() {
-        return category;
+    public Basket getBasket() {
+        return basket;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setBasket(Basket basket) {
+        this.basket = basket;
     }
 
     @Override

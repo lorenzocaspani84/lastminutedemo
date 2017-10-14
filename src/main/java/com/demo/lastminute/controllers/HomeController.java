@@ -1,6 +1,6 @@
 package com.demo.lastminute.controllers;
 
-import com.demo.lastminute.repository.CategoryRepository;
+import com.demo.lastminute.repository.BasketRepository;
 import com.demo.lastminute.service.ReceiptService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ public class HomeController {
     ReceiptService receiptService;
 
     @Autowired
-    CategoryRepository categoryRepository;
+    BasketRepository basketRepository;
     
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ModelAndView home() throws Exception {
@@ -29,7 +29,7 @@ public class HomeController {
         receiptService.generatePdf();
 
         ModelAndView mav = new ModelAndView("home");
-        mav.addObject("records", categoryRepository.findAllByOrderByIdAsc());
+        mav.addObject("records", basketRepository.findAllByOrderByIdAsc());
 
         return mav;
     }

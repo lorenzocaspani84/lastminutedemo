@@ -3,7 +3,7 @@ package com.demo.lastminute.service;
 import com.demo.lastminute.domain.Goods;
 import com.demo.lastminute.dto.GoodsOutput;
 import com.demo.lastminute.dto.ReturnObject;
-import com.demo.lastminute.repository.CategoryRepository;
+import com.demo.lastminute.repository.BasketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.List;
 public class GoodsServiceImpl implements GoodsService {
 
     @Autowired
-    CategoryRepository categoryRepository;
+    BasketRepository basketRepository;
 
     @Autowired
     PrecisionService precisionService;

@@ -7,19 +7,19 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "category")
+@Table(name = "basket")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Category {
+public class Basket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "category_id")
+    @Column(name = "basket_id")
     private Long id;
 
     @Column(name = "name")
     private String name;
 
-    @OneToMany(targetEntity = Goods.class, orphanRemoval = true, mappedBy = "category", cascade = {
+    @OneToMany(targetEntity = Goods.class, orphanRemoval = true, mappedBy = "basket", cascade = {
             CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     private List<Goods> goods;
 
@@ -49,7 +49,7 @@ public class Category {
 
     @Override
     public String toString() {
-        return "Category{" +
+        return "Basket{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
