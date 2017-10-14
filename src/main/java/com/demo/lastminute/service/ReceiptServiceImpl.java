@@ -94,18 +94,22 @@ public class ReceiptServiceImpl implements ReceiptService{
 
             return responseByte;
         }catch (IOException ex){
-            throw new CustomException("Error during pdf download", HttpStatus.BAD_REQUEST);
+            throw new CustomException("Error during pdf download", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public void generatePdf() throws Exception {
+    public void generatePdf() throws CustomException {
 
         List<ReturnObject> output = createOutput();
 
         Map<String,List<ReturnObject> > data = new HashMap<String, List<ReturnObject> >();
         data.put("data",output);
-        pdfGenaratorUtil.createPdf(pdfTemplateFilename, data);
+        try {
+            pdfGenaratorUtil.createPdf(pdfTemplateFilename, data);
+        }catch (Exception ex){
+            throw new CustomException("Error during pdf creation", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
     }
 }
