@@ -17,4 +17,6 @@ public interface GoodsService {
     BigDecimal totalTaxOnSingleGood(BigDecimal price, int taxes);
 
     int getTaxes(Goods good);
+
+    Goods findGoodsByName(String name);
 }

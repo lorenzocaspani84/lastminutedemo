@@ -4,6 +4,7 @@ import com.demo.lastminute.domain.Goods;
 import com.demo.lastminute.dto.GoodsOutput;
 import com.demo.lastminute.dto.ReturnObject;
 import com.demo.lastminute.repository.BasketRepository;
+import com.demo.lastminute.repository.GoodsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,9 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Autowired
     BasketRepository basketRepository;
+
+    @Autowired
+    GoodsRepository goodsRepository;
 
     @Autowired
     PrecisionService precisionService;
@@ -54,7 +58,6 @@ public class GoodsServiceImpl implements GoodsService {
     public BigDecimal totalTaxOnSingleGood(BigDecimal price, int taxes){
         BigDecimal tax = BigDecimal.ZERO;
         if(taxes > 0){
-            //Double doubleValue = (price.doubleValue() * (0.01 * taxes));
             Double doubleValue = (price.doubleValue() *taxes) / 100;
             tax = BigDecimal.valueOf(doubleValue);
             tax = precisionService.roundValue(tax);
@@ -74,5 +77,10 @@ public class GoodsServiceImpl implements GoodsService {
         }
 
         return taxPercentual;
+    }
+
+    @Override
+    public Goods findGoodsByName(String name){
+        return goodsRepository.findGoodsByName(name);
     }
 }
