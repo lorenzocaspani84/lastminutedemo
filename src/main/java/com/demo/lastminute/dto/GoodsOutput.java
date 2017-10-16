@@ -31,7 +31,7 @@ public class GoodsOutput {
     }
 
     public BigDecimal getPrice() {
-        return price;
+        return price.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     public void setPrice(BigDecimal price) {
@@ -39,7 +39,7 @@ public class GoodsOutput {
     }
 
     public BigDecimal getTax() {
-        return tax;
+        return tax.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     public void setTax(BigDecimal tax) {
@@ -47,7 +47,7 @@ public class GoodsOutput {
     }
 
     public BigDecimal getRoundedTax() {
-        return roundedTax;
+        return roundedTax.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     public void setRoundedTax(BigDecimal roundedTax) {
